@@ -26,6 +26,8 @@ public class ProblemSolverBuilder : IProblemSolverBuilder
             (1, 2) => new ProblemSolverDay1Part2(input),
 			(2, 1) => new ProblemSolverDay2Part1(input),
             (2, 2) => new ProblemSolverDay2Part2(input),
+            (3, 1) => new ProblemSolverDay3Part1(input),
+            (3, 2) => new ProblemSolverDay3Part2(input),
             _ => throw new ArgumentOutOfRangeException("")
         };
     }
