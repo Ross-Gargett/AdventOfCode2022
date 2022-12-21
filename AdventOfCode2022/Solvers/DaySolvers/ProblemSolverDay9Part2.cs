@@ -7,13 +7,17 @@ namespace AdventOfCode2022.Solvers.DaySolvers;
 
 internal class ProblemSolverDay9Part2 : IProblemSolver
 {
+    private readonly LongRopeSimulator _simulator;
     
     public ProblemSolverDay9Part2(IEnumerable<string> input)
     {
+        _simulator = new LongRopeSimulator(input.ToList());
     }
 
     public string Solve()
     {
-        return $"";
+        _simulator.Simulate();
+        
+        return $"{_simulator.CountTailPositions()}";
     }
 }
