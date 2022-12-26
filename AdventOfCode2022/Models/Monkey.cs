@@ -2,7 +2,7 @@ namespace AdventOfCode2022.Models;
 
 public class Monkey
 {
-    public Monkey(IEnumerable<int> startingItems,
+    public Monkey(IEnumerable<long> startingItems,
                   string operation, int divisibilityTest,
                   int trueTarget, int falseTarget)
     {
@@ -15,16 +15,19 @@ public class Monkey
         FalseTarget = falseTarget;
     }
 
-    public List<int> Items { get; set; }
+    public List<long> Items { get; set; }
     public string Operation { get; set; }
     public int DivisibilityTest { get; set; }
     public int Inspections { get; set; }
     public int TrueTarget { get; set; }
     public int FalseTarget { get; set; }
 
-    public List<MonkeyThrow> InspectItems()
+    public List<MonkeyThrow> InspectItems(double factor, MonkeyPart part)
     {
-        var throws = Items.Select(PerformOperation)
+        var throws = Items
+            .Select(x => PerformOperation(x, 
+                                             part, 
+                                             factor))
             .Select(newWorry => newWorry % DivisibilityTest == 0
                 ? InitializeTrueThrow(newWorry)
                 : InitializeFalseThrow(newWorry))
@@ -35,7 +38,7 @@ public class Monkey
         return throws;
     }
 
-    private MonkeyThrow InitializeTrueThrow(int item)
+    private MonkeyThrow InitializeTrueThrow(long item)
     {
         return new MonkeyThrow
         {
@@ -44,7 +47,7 @@ public class Monkey
         };
     }
 
-    private MonkeyThrow InitializeFalseThrow(int item)
+    private MonkeyThrow InitializeFalseThrow(long item)
     {
         return new MonkeyThrow
         {
@@ -53,7 +56,9 @@ public class Monkey
         };
     }
 
-    private int PerformOperation(int item)
+    private long PerformOperation(long item, 
+                                 MonkeyPart part, 
+                                 double factor = 0)
     {
         var operationParts = Operation.Split(" ");
 
@@ -62,20 +67,27 @@ public class Monkey
                 ? $"{item}" 
                 : x).ToArray();
 
-        var result = int.Parse(operationParts[0]);
+        var result = long.Parse(operationParts[0]);
         var op = operationParts[1];
 
         Inspections++;
         
-        return op switch
+        var operationResult = op switch
         {
-            "+" => (int)Math.Floor((result + int.Parse(operationParts[2])) / 3.0),
-            "*" => (int)Math.Floor((result * int.Parse(operationParts[2])) / 3.0),
+            "+" => result + long.Parse(operationParts[2]),
+            "*" => result * long.Parse(operationParts[2]),
             _ => 0
         };
+
+        if (part == MonkeyPart.Part1)
+        {
+            return (long)Math.Floor(operationResult / 3.0);
+        }
+        
+        return (long)Math.Floor(operationResult % factor);
     }
 
-    public void AddItem(int item)
+    public void AddItem(long item)
     {
         Items.Add(item);
     }
@@ -83,6 +95,6 @@ public class Monkey
 
 public class MonkeyThrow
 {
-    public int Item { get; set; }
+    public long Item { get; set; }
     public int Target { get; set; }
 }

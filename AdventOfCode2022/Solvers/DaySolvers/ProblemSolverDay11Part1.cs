@@ -10,7 +10,7 @@ internal class ProblemSolverDay11Part1 : IProblemSolver
     
     public ProblemSolverDay11Part1(IEnumerable<string> input)
     {
-        _monkeyManager = new MonkeyManager();
+        _monkeyManager = new MonkeyManager(20, MonkeyPart.Part1);
         ParseMonkeys(input);
     }
 
@@ -20,21 +20,8 @@ internal class ProblemSolverDay11Part1 : IProblemSolver
         
         foreach (var chunk in chunked)
         {
-            var itemString = chunk[1].Split(": ")[1];
-            var items = itemString
-                .Split(", ")
-                .Select(int.Parse)
-                .ToList();
+            var monkey = MonkeyParser.ParseMonkey(chunk);
 
-            var monkey = new Monkey
-            (
-                items,
-                chunk[2].Split(": new = ")[1],
-                int.Parse(chunk[3].Split(": divisible by ")[1]),
-                int.Parse(chunk[4].Split("monkey ")[1]),
-                int.Parse(chunk[5].Split("monkey ")[1])
-            );
-            
             _monkeyManager.AddMonkey(monkey);
         }
     }
@@ -45,7 +32,8 @@ internal class ProblemSolverDay11Part1 : IProblemSolver
         
         var activeMonkeys = _monkeyManager.GetMostActiveMonkeys(2);
 
-        var monkeyBusiness = activeMonkeys.Select(m => m.Inspections)
+        var monkeyBusiness = activeMonkeys
+            .Select(m => m.Inspections)
             .Aggregate((subtotal, m) => subtotal * m);
         
         return $"{monkeyBusiness}";
